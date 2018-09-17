@@ -18,6 +18,7 @@ public class Controller : MonoBehaviour {
     private int dir=0;
     private int cont_izq = 0;
     private int cont_der = 0;
+    private int winaux = 0;
 
     //Control reubicaciones;
     public Transform place;
@@ -60,15 +61,16 @@ public class Controller : MonoBehaviour {
         {
         
         if (Input.GetKeyDown(KeyCode.LeftArrow))//izquierda
-        {
+           {
                 dir = -1;
+                cont++;
                 LiveOrDie();
                 if (GameManager.instance.IsGameStarted())
                 {
-                    player.transform.Rotate(Vector3.down, 45);
+                    player.transform.Rotate(Vector3.down,45);
                     targetlook.transform.Rotate(Vector3.down, 45);
                 }
-                cont++;
+               
                 cont_izq++;
                 if (cont_izq==8)
                 {
@@ -78,15 +80,17 @@ public class Controller : MonoBehaviour {
                 
             }
         if (Input.GetKeyDown(KeyCode.RightArrow))//derecha
-        {
+           {
                 dir = +1;
+                cont++;
                 LiveOrDie();
                 if (GameManager.instance.IsGameStarted())
                 {
                     player.transform.Rotate(Vector3.up, 45);
-                    targetlook.transform.Rotate(Vector3.up, 45);
+                    targetlook.transform.Rotate(Vector3.up, 45); 
                 }
-                cont++;
+                
+                
                 cont_der++;
                 if (cont_der == 8)
                 {
@@ -94,19 +98,24 @@ public class Controller : MonoBehaviour {
                 }
                 
             }
-            GameManager.instance.UpdateSegments();
+            
             Movement_plataforms();
+           
         }
     }
     void OnTriggerExit(Collider other)
     {
         GameManager.instance.SetScreensActive(true);
+        if (cont==0)
+        {
+            GameManager.instance.Dead();
+        }
         cont = 0;
     }
     void Movement_plataforms()
     {
 
-        if (cont==1&&GameManager.instance.IsGameStarted())
+        if (cont==1 && GameManager.instance.IsGameStarted())
         {
         if (dir == 1)//derecha
         {
@@ -208,9 +217,15 @@ public class Controller : MonoBehaviour {
         else if(auxLeft != auxCenter)//derecha
         {cor = 1; }
         
-        if (dir == cor)
+        if (dir == cor && cont!=0)
         {
             GameManager.instance.Segmentmanager();
+            GameManager.instance.UpdateSegments();
+            winaux++;
+            if (winaux==6)
+            {
+                GameManager.instance.Win();
+            }
         }
         else
         {
